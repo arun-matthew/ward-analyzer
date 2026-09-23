@@ -1,326 +1,348 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ward Workforce Analyzer</title>
+    <title>Nursing Management Toolkit</title>
     <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            padding: 20px;
-            background-color: #f4f7f6;
-            color: #333;
-        }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; padding: 20px; background-color: #f4f7f6; color: #333; }
+        .container { max-width: 700px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h2 { color: #2c3e50; margin-top: 0; text-align: center; }
+        
+        /* Tabs Styling */
+        .tabs { display: flex; border-bottom: 2px solid #ddd; margin-bottom: 20px; }
+        .tab-btn { flex: 1; padding: 12px; font-size: 16px; font-weight: bold; cursor: pointer; border: none; background: #f8f9fa; color: #666; transition: 0.3s; }
+        .tab-btn:hover { background: #e9ecef; }
+        .tab-btn.active { background: #007bff; color: white; border-radius: 8px 8px 0 0; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
 
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        }
+        /* Form Styling */
+        .form-group { display: flex; justify-content: space-between; margin-bottom: 15px; align-items: center; }
+        input[type="number"], input[type="password"] { padding: 8px; width: 80px; border: 1px solid #ccc; border-radius: 4px; font-size: 16px; }
+        input[type="password"] { width: 250px; }
+        textarea { width: 100%; padding: 10px; border: 1px solid #ccc; border-radius: 4px; font-size: 14px; margin-top: 5px; box-sizing: border-box; resize: vertical; font-family: inherit; }
+        
+        .btn { background-color: #007bff; color: white; border: none; padding: 12px 20px; font-size: 16px; border-radius: 4px; cursor: pointer; width: 100%; margin-top: 10px; font-weight: bold; transition: background 0.2s; }
+        .btn:hover { background-color: #0056b3; }
+        .btn:active { transform: scale(0.98); }
+        .btn-ai { background-color: #6f42c1; }
+        .btn-ai:hover { background-color: #59339d; }
+        .btn-pdf { background-color: #dc3545; }
+        .btn-pdf:hover { background-color: #c82333; }
+        .btn-excel { background-color: #28a745; }
+        
+        /* Layout elements */
+        .button-group { display: flex; gap: 10px; margin-top: 15px; }
+        .results { margin-top: 25px; padding: 20px; background-color: #e9ecef; border-radius: 4px; display: none; }
+        hr { border: 0; border-top: 1px solid #ddd; margin: 20px 0; }
+        
+        /* Status Badges for Analyzer */
+        .ratio-alert { color: #721c24; font-weight: bold; }
+        .status-adequate { color: #155724; font-weight: bold; background: #d4edda; padding: 3px 8px; border-radius: 4px; border: 1px solid #c3e6cb; }
+        .status-tight { color: #856404; font-weight: bold; background: #fff3cd; padding: 3px 8px; border-radius: 4px; border: 1px solid #ffeeba; }
+        .status-understaffed { color: #721c24; font-weight: bold; background: #f8d7da; padding: 3px 8px; border-radius: 4px; border: 1px solid #f5c6cb; }
 
-        h2 {
-            color: #2c3e50;
-            margin-top: 0;
-        }
-
-        .form-group {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 15px;
-            align-items: center;
-        }
-
-        input {
-            padding: 8px;
-            width: 80px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-            font-size: 16px;
-        }
-
-        .btn {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 16px;
-            border-radius: 4px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-            font-weight: bold;
-            transition: background 0.2s;
-        }
-
-        .btn:hover {
-            background-color: #0056b3;
-        }
-
-        .btn:active {
-            transform: scale(0.98);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-top: 15px;
-        }
-
-        .btn-excel {
-            background-color: #28a745;
-            margin-top: 0;
-        }
-
-        .btn-excel:hover {
-            background-color: #218838;
-        }
-
-        .btn-pdf {
-            background-color: #dc3545;
-            margin-top: 0;
-        }
-
-        .btn-pdf:hover {
-            background-color: #c82333;
-        }
-
-        .results {
-            margin-top: 25px;
-            padding: 20px;
-            background-color: #e9ecef;
-            border-radius: 4px;
-            display: none;
-        }
-
-        .results p {
-            margin: 10px 0;
-            font-size: 16px;
-        }
-
-        .ratio-alert {
-            color: #721c24;
-            font-weight: bold;
-        }
-
-        /* Status Badges */
-        .status-adequate {
-            color: #155724;
-            font-weight: bold;
-            background: #d4edda;
-            padding: 3px 8px;
-            border-radius: 4px;
-            border: 1px solid #c3e6cb;
-        }
-
-        .status-tight {
-            color: #856404;
-            font-weight: bold;
-            background: #fff3cd;
-            padding: 3px 8px;
-            border-radius: 4px;
-            border: 1px solid #ffeeba;
-        }
-
-        .status-understaffed {
-            color: #721c24;
-            font-weight: bold;
-            background: #f8d7da;
-            padding: 3px 8px;
-            border-radius: 4px;
-            border: 1px solid #f5c6cb;
-        }
+        /* API Settings Box */
+        .api-settings { background: #f1f3f5; padding: 15px; border-radius: 6px; margin-top: 30px; font-size: 13px; color: #555; }
+        .api-settings p { margin: 0 0 10px 0; }
+        .loading { text-align: center; font-style: italic; color: #6f42c1; display: none; margin-top: 10px; }
     </style>
 </head>
-
 <body>
 
-    <div class="container">
-        <h2>Workforce Requirement Analyzer</h2>
+<div class="container">
+    <h2>Nursing Management Toolkit</h2>
+    
+    <!-- Tab Navigation -->
+    <div class="tabs">
+        <button class="tab-btn active" onclick="switchTab('tab-analyzer', this)">Workforce Analyzer</button>
+        <button class="tab-btn" onclick="switchTab('tab-activity', this)">Activity Report Generator</button>
+    </div>
 
+    <!-- TAB 1: WORKFORCE ANALYZER -->
+    <div id="tab-analyzer" class="tab-content active">
         <h4>Ward Capacity & Standards</h4>
-        <div class="form-group">
-            <label>Total Maternal Beds:</label>
-            <input type="number" id="beds" value="11">
-        </div>
-        <div class="form-group">
-            <label>Expected Babies (Couplet Care):</label>
-            <input type="number" id="babies" value="11">
-        </div>
-        <div class="form-group">
-            <label>Target Max Patients per Nurse:</label>
-            <input type="number" id="targetRatio" value="6" style="background-color: #e8f4f8; font-weight: bold;">
-        </div>
+        <div class="form-group"><label>Total Maternal Beds:</label><input type="number" id="beds" value="11"></div>
+        <div class="form-group"><label>Expected Babies (Couplet Care):</label><input type="number" id="babies" value="11"></div>
+        <div class="form-group"><label>Target Max Patients per Nurse:</label><input type="number" id="targetRatio" value="6" style="background-color: #e8f4f8; font-weight: bold;"></div>
 
-        <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+        <hr>
         <h4>Staffing & Shift Requirements</h4>
-
-        <div class="form-group">
-            <label>Total Current Staff:</label>
-            <input type="number" id="staff" value="8">
-        </div>
-        <div class="form-group">
-            <label>Days in Month:</label>
-            <input type="number" id="days" value="30">
-        </div>
-        <div class="form-group">
-            <label>Nurses Assigned Per Shift (M, E, N):</label>
-            <input type="number" id="nursesPerShift" value="2">
-        </div>
-
-        <hr style="border: 0; border-top: 1px solid #ddd; margin: 20px 0;">
+        <div class="form-group"><label>Total Current Staff:</label><input type="number" id="staff" value="8"></div>
+        <div class="form-group"><label>Days in Month:</label><input type="number" id="days" value="30"></div>
+        <div class="form-group"><label>Nurses Assigned Per Shift (M, E, N):</label><input type="number" id="nursesPerShift" value="2"></div>
+        
+        <hr>
         <h4>Leaves Per Staff Member</h4>
+        <div class="form-group"><label>Weekly Offs:</label><input type="number" id="weeklyOffs" value="4"></div>
+        <div class="form-group"><label>Night Shift Offs:</label><input type="number" id="nightOffs" value="1"></div>
+        <div class="form-group"><label>Casual Leave (CL):</label><input type="number" id="cl" value="1"></div>
+        <div class="form-group"><label>Public Holidays (PH):</label><input type="number" id="ph" value="1"></div>
+        <div class="form-group"><label>Emergency Leave Reserve:</label><input type="number" id="emergency" value="0"></div>
 
-        <div class="form-group">
-            <label>Weekly Offs:</label>
-            <input type="number" id="weeklyOffs" value="4">
-        </div>
-        <div class="form-group">
-            <label>Night Shift Offs:</label>
-            <input type="number" id="nightOffs" value="1">
-        </div>
-        <div class="form-group">
-            <label>Casual Leave (CL):</label>
-            <input type="number" id="cl" value="1">
-        </div>
-        <div class="form-group">
-            <label>Public Holidays (PH):</label>
-            <input type="number" id="ph" value="1">
-        </div>
-        <div class="form-group">
-            <label>Emergency Leave Reserve:</label>
-            <input type="number" id="emergency" value="0">
-        </div>
-
-        <button class="btn" onclick="calculate()">Analyze Workforce</button>
+        <button class="btn" onclick="calculateAnalyzer()">Analyze Workforce</button>
 
         <div class="results" id="results">
-            <p>Maximum Patient Load: <strong id="resMaxPatients"></strong> (Mothers + Babies)</p>
-            <p>Actual Assigned Ratio: <strong id="resRatio"></strong> per nurse</p>
-            <hr style="border: 0; border-top: 1px solid #ccc; margin: 15px 0;">
+            <p>Maximum Patient Load: <strong id="resMaxPatients"></strong></p>
+            <p>Actual Assigned Ratio: <strong id="resRatio"></strong></p>
+            <hr>
             <p>Total Monthly Shifts Required: <strong id="resRequired"></strong></p>
             <p>Total Available Staff Shifts: <strong id="resAvailable"></strong></p>
             <p>Shift Surplus / Deficit: <strong id="resMargin"></strong></p>
             <p>Verdict: <span id="resStatus"></span></p>
-
+            
             <div class="button-group">
                 <button class="btn btn-excel" onclick="downloadCSV()">Download Excel</button>
-                <button class="btn btn-pdf" onclick="downloadPDF()">Download PDF</button>
+                <button class="btn btn-pdf" onclick="downloadAnalyzerPDF()">Download PDF</button>
             </div>
         </div>
     </div>
 
-    <script>
-        let reportData = {};
+    <!-- TAB 2: ACTIVITY REPORT GENERATOR -->
+    <div id="tab-activity" class="tab-content">
+        <h4>Rough Monthly Notes</h4>
+        <p style="font-size: 14px; color: #666; margin-top: -10px;">Jot down rough bullet points collected over the month. The AI will format them professionally.</p>
+        
+        <label><strong>Patient Care & Clinical Operations (Gynae, Paeds, Post-op)</strong></label>
+        <textarea id="note-patient" rows="3" placeholder="e.g. managed average daily census, specialized post-op care, pediatric monitoring..."></textarea><br><br>
+        
+        <label><strong>Documentation & Audits</strong></label>
+        <textarea id="note-docs" rows="3" placeholder="e.g. monthly inventory audits, patient record compliance..."></textarea><br><br>
 
-        function calculate() {
-            // Collect Inputs
-            const beds = parseInt(document.getElementById('beds').value) || 0;
-            const babies = parseInt(document.getElementById('babies').value) || 0;
-            const targetRatio = parseInt(document.getElementById('targetRatio').value) || 6;
-            const staff = parseInt(document.getElementById('staff').value) || 0;
-            const days = parseInt(document.getElementById('days').value) || 0;
-            const nursesPerShift = parseInt(document.getElementById('nursesPerShift').value) || 0;
+        <label><strong>Staff Development & Mentoring</strong></label>
+        <textarea id="note-staff" rows="3" placeholder="e.g. conducted cross-training for paeds care, supervised new floor staff..."></textarea><br><br>
 
-            const weeklyOffs = parseInt(document.getElementById('weeklyOffs').value) || 0;
-            const nightOffs = parseInt(document.getElementById('nightOffs').value) || 0;
-            const cl = parseInt(document.getElementById('cl').value) || 0;
-            const ph = parseInt(document.getElementById('ph').value) || 0;
-            const emergency = parseInt(document.getElementById('emergency').value) || 0;
+        <label><strong>Ward Management & Incidents</strong></label>
+        <textarea id="note-ward" rows="3" placeholder="e.g. resolved equipment issues, handled inter-departmental coordination..."></textarea>
 
-            // Math Calculations
-            const maxPatients = beds + babies;
-            const actualRatio = maxPatients / (nursesPerShift || 1);
-            const dailyShiftsNeeded = nursesPerShift * 3;
-            const totalShiftsRequired = dailyShiftsNeeded * days;
-            const totalLeaves = weeklyOffs + nightOffs + cl + ph + emergency;
-            const workingDays = days - totalLeaves;
-            const totalAvailableShifts = staff * workingDays;
-            const margin = totalAvailableShifts - totalShiftsRequired;
-            const idealNursesPerShift = Math.ceil(maxPatients / targetRatio);
+        <button class="btn btn-ai" onclick="generateAIReport()">✨ Enhance Monthly Report with AI</button>
+        <div id="loading" class="loading">Communicating with AI... Please wait...</div>
 
-            // Update UI 
-            document.getElementById('resMaxPatients').innerText = maxPatients;
+        <div id="ai-output-section" style="display: none; margin-top: 25px;">
+            <h4>Polished Final Report (Edit if needed)</h4>
+            <textarea id="final-report-text" rows="12"></textarea>
+            <button class="btn btn-pdf" onclick="downloadActivityPDF()" style="margin-top: 10px;">Download Report as PDF</button>
+        </div>
 
-            const ratioEl = document.getElementById('resRatio');
-            if (actualRatio > targetRatio) {
-                ratioEl.innerHTML = `1:${actualRatio.toFixed(1)} <span class="ratio-alert">(Danger: Exceeds 1:${targetRatio} standard)</span>`;
-            } else {
-                ratioEl.innerText = `1:${actualRatio.toFixed(1)}`;
-            }
+        <!-- API Settings (Hidden mostly) -->
+        <div class="api-settings">
+            <p><strong>Secure AI Configuration</strong></p>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="password" id="api-key-input" placeholder="Paste Gemini API Key here...">
+                <button onclick="saveApiKey()" style="padding: 5px 10px; cursor: pointer;">Save Key to Browser</button>
+            </div>
+            <p style="margin-top: 5px; font-size: 11px;">Your key is stored locally on this device. It is never sent anywhere except directly to Google.</p>
+        </div>
+    </div>
+</div>
 
-            document.getElementById('resRequired').innerText = totalShiftsRequired;
-            document.getElementById('resAvailable').innerText = totalAvailableShifts;
-            document.getElementById('resMargin').innerText = margin;
+<script>
+    // --- UI/TAB LOGIC ---
+    function switchTab(tabId, btn) {
+        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+        document.getElementById(tabId).classList.add('active');
+        btn.classList.add('active');
+    }
 
-            const statusEl = document.getElementById('resStatus');
+    // --- ACTIVITY REPORT (AI) LOGIC ---
+    window.onload = function() {
+        const savedKey = localStorage.getItem('geminiApiKey');
+        if(savedKey) document.getElementById('api-key-input').value = savedKey;
+    };
 
-            // ** Explicitly clear previous classes to guarantee UI updates **
-            statusEl.className = "";
-            let verdict = "";
+    function saveApiKey() {
+        const key = document.getElementById('api-key-input').value;
+        if(key.trim() === "") return alert("Please enter a valid key.");
+        localStorage.setItem('geminiApiKey', key.trim());
+        alert("API Key saved securely to your browser!");
+    }
 
-            if (actualRatio > targetRatio) {
-                verdict = `Unsafe Patient Ratio (Requires ${idealNursesPerShift} nurses/shift)`;
-                statusEl.classList.add("status-understaffed");
-            } else if (margin > 5) {
-                verdict = "Adequate Staffing";
-                statusEl.classList.add("status-adequate");
-            } else if (margin >= 0) {
-                verdict = "Extremely Tight (No room for sick leave)";
-                statusEl.classList.add("status-tight");
-            } else {
-                verdict = "Understaffed Shift Roster";
-                statusEl.classList.add("status-understaffed");
-            }
-            statusEl.innerText = verdict;
-            document.getElementById('results').style.display = 'block';
-
-            // Save data for exports
-            reportData = {
-                beds, babies, maxPatients, targetRatio, actualRatio: actualRatio.toFixed(1),
-                staff, days, nursesPerShift, idealNursesPerShift, totalLeaves, workingDays,
-                totalShiftsRequired, totalAvailableShifts, margin, verdict, statusClass: statusEl.className
-            };
+    async function generateAIReport() {
+        const apiKey = localStorage.getItem('geminiApiKey');
+        if (!apiKey) {
+            alert("Please paste and save your Gemini API Key in the settings box below first.");
+            return;
         }
 
-        function downloadCSV() {
-            calculate(); // Ensure fresh data
-            let csv = "Parameter,Value\n";
-            csv += `Maximum Patient Load (Beds + Babies),${reportData.maxPatients}\n`;
-            csv += `Actual Assigned Ratio,1 to ${reportData.actualRatio}\n\n`;
-            csv += `Total Current Staff,${reportData.staff}\n`;
-            csv += `Days in Month,${reportData.days}\n`;
-            csv += `Total Monthly Shifts Required,${reportData.totalShiftsRequired}\n`;
-            csv += `Net Working Days Per Staff,${reportData.workingDays}\n`;
-            csv += `Total Available Staff Shifts,${reportData.totalAvailableShifts}\n\n`;
-            csv += `Shift Surplus/Deficit,${reportData.margin}\n`;
-            csv += `Verdict,${reportData.verdict}\n`;
+        const patient = document.getElementById('note-patient').value || "Routine monthly patient care maintained across all assigned wards.";
+        const docs = document.getElementById('note-docs').value || "Routine monthly documentation and audits completed.";
+        const staff = document.getElementById('note-staff').value || "Standard staff supervision and mentoring conducted.";
+        const ward = document.getElementById('note-ward').value || "Normal floor operations maintained throughout the month.";
 
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('hidden', '');
-            a.setAttribute('href', url);
-            a.setAttribute('download', 'Workforce_Analysis.csv');
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
+        const prompt = `You are an expert Nursing In-Charge of the Fourth Floor (managing the Gynaecology and Paediatric wards, as well as occasional post-surgery patients) writing a formal "Monthly Nursing Activity Report". 
+        Take the following accumulated rough notes written over the month and rewrite them into a highly professional, clinical hospital report. 
+        Format the output clearly using the following headers: 
+        1. Patient Care & Clinical Operations
+        2. Documentation & Compliance Audits
+        3. Staff Development & Mentoring
+        4. Ward Management & Incidents
+        
+        Do not use conversational filler. Be concise, objective, and professional, summarizing the month's overall activities appropriately for senior hospital administration.
+        
+        ROUGH NOTES:
+        - Patient Care: ${patient}
+        - Documentation: ${docs}
+        - Staff: ${staff}
+        - Ward: ${ward}`;
+
+        document.getElementById('loading').style.display = 'block';
+        document.getElementById('ai-output-section').style.display = 'none';
+
+        try {
+            const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+            });
+            
+            const data = await response.json();
+            
+            if (data.error) {
+                alert("API Error: " + data.error.message);
+            } else {
+                const aiText = data.candidates[0].content.parts[0].text;
+                document.getElementById('final-report-text').value = aiText;
+                document.getElementById('ai-output-section').style.display = 'block';
+            }
+        } catch (error) {
+            alert("Connection error. Check your internet or API key.");
+        } finally {
+            document.getElementById('loading').style.display = 'none';
+        }
+    }
+
+    function downloadActivityPDF() {
+        const reportText = document.getElementById('final-report-text').value.replace(/\n/g, '<br>');
+        const printWindow = window.open('', '_blank');
+        
+        const htmlContent = `
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Monthly Nursing Activity Report</title>
+            <style>
+                body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #333; max-width: 800px; margin: 0 auto; line-height: 1.6; }
+                .header { text-align: center; margin-bottom: 30px; padding-bottom: 10px; border-bottom: 2px solid #2c3e50; }
+                h1 { color: #2c3e50; margin: 0 0 10px 0; font-size: 24px; }
+                .date { color: #666; font-style: italic; }
+                .content { font-size: 14px; }
+                .content h2, .content strong { color: #2c3e50; font-size: 16px; margin-top: 20px; display: block; }
+                .signature-line { margin-top: 60px; border-top: 1px solid #333; width: 250px; padding-top: 5px; text-align: center; }
+            </style>
+        </head>
+        <body onload="window.print()">
+            <div class="header">
+                <h1>Monthly Nursing Activity Report</h1>
+                <div class="date">Fourth Floor (Gynaecology & Paediatric Wards) | Date: ${new Date().toLocaleDateString()}</div>
+            </div>
+            <div class="content">
+                ${reportText}
+            </div>
+            <div class="signature-line">
+                Nursing In-Charge Signature
+            </div>
+        </body>
+        </html>`;
+        
+        printWindow.document.open();
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+    }
+
+    // --- WORKFORCE ANALYZER LOGIC ---
+    let reportData = {};
+
+    function calculateAnalyzer() {
+        const beds = parseInt(document.getElementById('beds').value) || 0;
+        const babies = parseInt(document.getElementById('babies').value) || 0;
+        const targetRatio = parseInt(document.getElementById('targetRatio').value) || 6;
+        const staff = parseInt(document.getElementById('staff').value) || 0;
+        const days = parseInt(document.getElementById('days').value) || 0;
+        const nursesPerShift = parseInt(document.getElementById('nursesPerShift').value) || 0;
+        
+        const weeklyOffs = parseInt(document.getElementById('weeklyOffs').value) || 0;
+        const nightOffs = parseInt(document.getElementById('nightOffs').value) || 0;
+        const cl = parseInt(document.getElementById('cl').value) || 0;
+        const ph = parseInt(document.getElementById('ph').value) || 0;
+        const emergency = parseInt(document.getElementById('emergency').value) || 0;
+
+        const maxPatients = beds + babies;
+        const actualRatio = maxPatients / (nursesPerShift || 1); 
+        const dailyShiftsNeeded = nursesPerShift * 3; 
+        const totalShiftsRequired = dailyShiftsNeeded * days;
+        const totalLeaves = weeklyOffs + nightOffs + cl + ph + emergency;
+        const workingDays = days - totalLeaves;
+        const totalAvailableShifts = staff * workingDays;
+        const margin = totalAvailableShifts - totalShiftsRequired;
+        const idealNursesPerShift = Math.ceil(maxPatients / targetRatio);
+
+        document.getElementById('resMaxPatients').innerText = maxPatients;
+        const ratioEl = document.getElementById('resRatio');
+        if (actualRatio > targetRatio) {
+            ratioEl.innerHTML = `1:${actualRatio.toFixed(1)} <span class="ratio-alert">(Danger: Exceeds 1:${targetRatio})</span>`;
+        } else {
+            ratioEl.innerText = `1:${actualRatio.toFixed(1)}`;
         }
 
-        function downloadPDF() {
-            calculate(); // Ensure fresh data
+        document.getElementById('resRequired').innerText = totalShiftsRequired;
+        document.getElementById('resAvailable').innerText = totalAvailableShifts;
+        document.getElementById('resMargin').innerText = margin;
 
-            // Define colors for the PDF based on the verdict class
-            let bgColor = "#fff3cd"; let txtColor = "#856404"; let borderColor = "#ffeeba";
-            if (reportData.statusClass.includes("adequate")) { bgColor = "#d4edda"; txtColor = "#155724"; borderColor = "#c3e6cb"; }
-            if (reportData.statusClass.includes("understaffed")) { bgColor = "#f8d7da"; txtColor = "#721c24"; borderColor = "#f5c6cb"; }
+        const statusEl = document.getElementById('resStatus');
+        statusEl.className = ""; 
+        let verdict = "";
+        
+        if (actualRatio > targetRatio) {
+            verdict = `Unsafe Ratio (Requires ${idealNursesPerShift} nurses/shift)`;
+            statusEl.classList.add("status-understaffed");
+        } else if (margin > 5) {
+            verdict = "Adequate Staffing";
+            statusEl.classList.add("status-adequate");
+        } else if (margin >= 0) {
+            verdict = "Extremely Tight";
+            statusEl.classList.add("status-tight");
+        } else {
+            verdict = "Understaffed Shift Roster";
+            statusEl.classList.add("status-understaffed");
+        }
+        statusEl.innerText = verdict;
+        document.getElementById('results').style.display = 'block';
 
-            const printWindow = window.open('', '_blank');
+        reportData = { beds, babies, maxPatients, targetRatio, actualRatio: actualRatio.toFixed(1), staff, days, nursesPerShift, idealNursesPerShift, totalLeaves, workingDays, totalShiftsRequired, totalAvailableShifts, margin, verdict, statusClass: statusEl.className };
+    }
 
-            const htmlContent = `
+    function downloadCSV() {
+        calculateAnalyzer(); 
+        let csv = "Parameter,Value\n";
+        csv += `Maximum Patient Load,${reportData.maxPatients}\n`;
+        csv += `Actual Assigned Ratio,1 to ${reportData.actualRatio}\n\n`;
+        csv += `Total Current Staff,${reportData.staff}\n`;
+        csv += `Days in Month,${reportData.days}\n`;
+        csv += `Total Monthly Shifts Required,${reportData.totalShiftsRequired}\n`;
+        csv += `Total Available Staff Shifts,${reportData.totalAvailableShifts}\n\n`;
+        csv += `Shift Surplus/Deficit,${reportData.margin}\n`;
+        csv += `Verdict,${reportData.verdict}\n`;
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.setAttribute('hidden', '');
+        a.setAttribute('href', url);
+        a.setAttribute('download', 'Workforce_Analysis.csv');
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+
+    function downloadAnalyzerPDF() {
+        calculateAnalyzer();
+        let bgColor = "#fff3cd"; let txtColor = "#856404"; let borderColor = "#ffeeba";
+        if (reportData.statusClass.includes("adequate")) { bgColor = "#d4edda"; txtColor = "#155724"; borderColor = "#c3e6cb"; }
+        if (reportData.statusClass.includes("understaffed")) { bgColor = "#f8d7da"; txtColor = "#721c24"; borderColor = "#f5c6cb"; }
+
+        const printWindow = window.open('', '_blank');
+        const htmlContent = `
         <!DOCTYPE html>
         <html>
         <head>
@@ -329,57 +351,41 @@
                 body { font-family: 'Segoe UI', Arial, sans-serif; padding: 40px; color: #333; max-width: 800px; margin: 0 auto; }
                 .header { text-align: center; margin-bottom: 30px; padding-bottom: 10px; border-bottom: 2px solid #2c3e50; }
                 h1 { color: #2c3e50; margin: 0 0 10px 0; font-size: 24px; }
-                .date { color: #666; font-style: italic; }
                 table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
                 th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
                 th { background-color: #f8f9fa; width: 60%; font-weight: 600; }
                 .section-title { background-color: #2c3e50; color: white; padding: 10px; font-weight: bold; margin: 0; }
                 .verdict-box { margin-top: 20px; padding: 20px; background-color: ${bgColor}; color: ${txtColor}; border: 1px solid ${borderColor}; border-radius: 8px; text-align: center; }
-                .verdict-box h3 { margin: 0 0 10px 0; font-size: 16px; text-transform: uppercase; }
-                .verdict-box p { font-size: 20px; font-weight: bold; margin: 0; }
             </style>
         </head>
         <body onload="window.print()">
             <div class="header">
                 <h1>Gynaecology Ward - Workforce Analysis Report</h1>
-                <div class="date">Generated on: ${new Date().toLocaleDateString()}</div>
+                <div>Generated on: ${new Date().toLocaleDateString()}</div>
             </div>
-
             <div class="section-title">1. Patient Capacity & Ratios</div>
             <table>
-                <tr><th>Total Maternal Beds</th><td>${reportData.beds}</td></tr>
-                <tr><th>Expected Babies (Couplet Care)</th><td>${reportData.babies}</td></tr>
                 <tr><th>Maximum Patient Load</th><td><strong>${reportData.maxPatients}</strong></td></tr>
-                <tr><th>Target Safe Ratio</th><td>1 to ${reportData.targetRatio}</td></tr>
                 <tr><th>Actual Assigned Ratio</th><td><strong>1 to ${reportData.actualRatio}</strong></td></tr>
             </table>
-
             <div class="section-title">2. Shift & Staffing Metrics</div>
             <table>
                 <tr><th>Total Current Staff</th><td>${reportData.staff}</td></tr>
-                <tr><th>Days in Month</th><td>${reportData.days}</td></tr>
-                <tr><th>Nurses Assigned Per Shift (M, E, N)</th><td>${reportData.nursesPerShift}</td></tr>
                 <tr><th>Total Monthly Shifts Required</th><td><strong>${reportData.totalShiftsRequired}</strong></td></tr>
-                <tr><th>Total Leaves Allowed Per Staff</th><td>${reportData.totalLeaves}</td></tr>
-                <tr><th>Net Working Days Per Staff</th><td>${reportData.workingDays}</td></tr>
                 <tr><th>Total Available Staff Shifts</th><td><strong>${reportData.totalAvailableShifts}</strong></td></tr>
                 <tr><th>Shift Surplus / Deficit</th><td><strong>${reportData.margin}</strong></td></tr>
             </table>
-
             <div class="verdict-box">
                 <h3>Final Workforce Assessment</h3>
-                <p>${reportData.verdict}</p>
+                <p style="font-size: 20px; font-weight: bold; margin: 10px 0 0 0;">${reportData.verdict}</p>
             </div>
         </body>
-        </html>
-        `;
-
-            printWindow.document.open();
-            printWindow.document.write(htmlContent);
-            printWindow.document.close();
-        }
-    </script>
+        </html>`;
+        printWindow.document.open();
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
+    }
+</script>
 
 </body>
-
 </html>
