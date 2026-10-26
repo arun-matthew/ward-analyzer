@@ -13,11 +13,12 @@
   <div class="container">
     <h2>Nursing Management Toolkit</h2>
 
-    <!-- 3-Tab Navigation -->
+    <!-- 4-Tab Navigation -->
     <div class="tabs">
-      <button class="tab-btn active" onclick="switchTab('tab-analyzer', this)">Workforce Analyzer</button>
-      <button class="tab-btn" onclick="switchTab('tab-activity', this)">Activity Report</button>
-      <button class="tab-btn" onclick="switchTab('tab-mom', this)">Minutes of Meeting</button>
+      <button class="tab-btn active" onclick="switchTab('tab-analyzer', this)">Workforce</button>
+      <button class="tab-btn" onclick="switchTab('tab-activity', this)">Activity</button>
+      <button class="tab-btn" onclick="switchTab('tab-mom', this)">MOM</button>
+      <button class="tab-btn" onclick="switchTab('tab-rounding', this)">Clinical Rounds</button>
     </div>
 
     <!-- TAB 1: WORKFORCE ANALYZER -->
@@ -160,7 +161,6 @@
         </div>
       </div>
 
-      <!-- Quick AI Adder for New Meeting Notes -->
       <div class="mom-quick-ai-box">
         <label><strong>➕ Add New Discussion Points with AI (Optional)</strong></label>
         <p class="sub-hint-sm" style="margin: 3px 0 6px 0;">Type rough points discussed in today's meeting. AI will
@@ -173,7 +173,6 @@
 
       <div id="mom-loading" class="loading">Communicating with AI... Please wait...</div>
 
-      <!-- Editable MOM Table (Pre-populated with the 8 Nursing Department Points) -->
       <div class="table-header-bar" style="margin-top: 20px;">
         <div>
           <h4 style="margin: 0;">Editable MOM Table</h4>
@@ -209,7 +208,67 @@
       </div>
     </div>
 
-    <!-- SHARED API SETTINGS (Works for both Activity Report & MOM Tabs) -->
+    <!-- TAB 4: CLINICAL ROUNDING (DAILY & WEEKLY) -->
+    <div id="tab-rounding" class="tab-content">
+      <!-- Daily Tracker Section -->
+      <div class="rounding-box">
+        <div class="date-selector-row">
+          <h4>Daily Leadership Rounding</h4>
+          <div style="display: flex; align-items: center; gap: 10px;">
+            <label style="font-weight: bold; font-size: 14px; color: #163a5f;">Select Date:</label>
+            <input type="date" id="rounding-date" onchange="loadRoundingDataForDate()">
+          </div>
+        </div>
+        <p class="sub-hint-sm" style="margin-bottom: 15px;">Rating Scale: C (Compliant), PC (Partially Compliant), NC
+          (Non-compliant), NA (Not Applicable), CR (Critical Risk)</p>
+
+        <div id="checkpoints-container">
+          <!-- Javascript will inject the 14 NABH/JCI checkpoints here -->
+        </div>
+
+        <button class="btn btn-excel" style="margin-top: 20px; background-color: #198754;"
+          onclick="saveRoundingDataForDate()">💾 Save Today's Round</button>
+        <p class="sub-hint-sm" style="text-align: center; margin-top: 8px;">Saved locally on this device. Change the
+          date above to view or edit past days.</p>
+      </div>
+
+      <!-- Weekly AI Report & Export Section -->
+      <div class="rounding-box" style="margin-top: 25px; border-top: 4px solid #163a5f;">
+        <h4>Generate Weekly Report</h4>
+        <p class="sub-hint-sm" style="margin-top: -5px; margin-bottom: 15px;">Select a date range to synthesize all
+          saved daily notes into a formal weekly summary, or export raw data to Excel for backup.</p>
+
+        <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+          <div style="flex: 1; min-width: 130px;">
+            <label style="font-size: 13px; font-weight: 600;">Start Date:</label>
+            <input type="date" id="report-start-date"
+              style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+          <div style="flex: 1; min-width: 130px;">
+            <label style="font-size: 13px; font-weight: 600;">End Date:</label>
+            <input type="date" id="report-end-date"
+              style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+          </div>
+        </div>
+
+        <div class="button-group">
+          <button class="btn btn-ai-table" onclick="generateWeeklyRoundingReport()">✨ Generate Weekly Summary
+            (AI)</button>
+          <button class="btn btn-excel" onclick="exportRoundingDataToExcel()">📊 Export All Data to Excel</button>
+        </div>
+
+        <div id="rounding-loading" class="loading">Communicating with AI... Please wait...</div>
+
+        <div id="rounding-output-section" style="display: none; margin-top: 20px;">
+          <h4 style="margin-bottom: 10px;">Executive Weekly Summary (Editable)</h4>
+          <textarea id="rounding-final-report" rows="12"></textarea>
+          <button class="btn btn-pdf" onclick="downloadRoundingWeeklyPDF()" style="margin-top: 10px;">📄 Download Weekly
+            PDF</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- SHARED API SETTINGS -->
     <button class="api-toggle-btn" onclick="toggleApiSettings()">⚙️ AI Configuration Settings</button>
     <div class="api-settings" id="apiSettingsPanel">
       <p><strong>Universal AI Configuration (Supports Gemini, Groq, ChatGPT, or Claude)</strong></p>

@@ -39,7 +39,7 @@ h2 {
   background: #f8f9fa;
   color: #666;
   transition: 0.3s;
-  min-width: 30%;
+  min-width: 20%;
 }
 
 .tab-btn:hover {
@@ -69,14 +69,9 @@ h2 {
   gap: 10px;
 }
 
-.meta-box {
-  background: #f8f9fa;
-  padding: 12px;
-  border-radius: 6px;
-  border: 1px solid #e9ecef;
-}
-
-.mom-meta-grid {
+.meta-box,
+.mom-meta-grid,
+.rounding-box {
   background: #f8f9fa;
   padding: 14px;
   border-radius: 6px;
@@ -123,7 +118,8 @@ input[type="number"] {
   font-size: 16px;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="date"] {
   padding: 8px 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
@@ -142,6 +138,65 @@ textarea {
   box-sizing: border-box;
   resize: vertical;
   font-family: inherit;
+}
+
+/* Clinical Rounding Checkpoint Cards */
+.date-selector-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.cp-card {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  padding: 12px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cp-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 15px;
+}
+
+.cp-title {
+  font-size: 13px;
+  font-weight: 600;
+  margin: 0;
+  flex: 1;
+  color: #2c3e50;
+  line-height: 1.4;
+}
+
+.cp-rating {
+  padding: 6px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-weight: bold;
+  color: #163a5f;
+  background-color: #f8f9fa;
+  cursor: pointer;
+  font-size: 13px;
+  width: 60px;
+  text-align: center;
+}
+
+.cp-remarks {
+  padding: 8px;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+  font-size: 13px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #fdfdfd;
 }
 
 /* Buttons */
@@ -211,7 +266,6 @@ textarea {
   margin-top: 0;
 }
 
-/* Layout elements */
 .button-group {
   display: flex;
   gap: 10px;
@@ -265,7 +319,7 @@ hr {
   border: 1px solid #f5c6cb;
 }
 
-/* Preview Table Styling */
+/* Tables */
 .table-wrapper {
   overflow-x: auto;
   margin-top: 10px;
@@ -309,10 +363,7 @@ hr {
   font-weight: bold;
 }
 
-.col-focus {
-  width: 17%;
-}
-
+.col-focus,
 .col-act {
   width: 17%;
 }
@@ -325,7 +376,6 @@ hr {
   width: 19%;
 }
 
-/* MOM Table Specific Column Widths */
 .col-mom-topic {
   width: 18%;
   font-weight: 600;
@@ -375,7 +425,7 @@ hr {
   color: #0d9488;
 }
 
-/* API Settings Box & Toggle */
+/* API Settings */
 .api-toggle-btn {
   background: none;
   border: none;
@@ -425,7 +475,7 @@ hr {
   font-weight: 500;
 }
 
-/* Mobile Responsive Fixes */
+/* Mobile Responsive */
 @media (max-width: 600px) {
   .form-group {
     flex-direction: column;
@@ -456,12 +506,18 @@ hr {
   .tab-btn {
     font-size: 13px;
     padding: 10px 4px;
-    min-width: 100%;
+    min-width: 48%;
     border-radius: 4px;
     margin-bottom: 3px;
   }
 
   .tab-btn.active {
     border-radius: 4px;
+  }
+
+  .date-selector-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
   }
 }
