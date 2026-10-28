@@ -98,7 +98,6 @@
       </div>
       <div id="loading" class="loading">Communicating with AI... Please wait...</div>
 
-      <!-- OUTPUT 1: TABULAR REPORT SECTION -->
       <div id="ai-table-section" style="display: none; margin-top: 25px;">
         <div class="table-header-bar">
           <div>
@@ -129,7 +128,6 @@
         </div>
       </div>
 
-      <!-- OUTPUT 2: NARRATIVE REPORT SECTION -->
       <div id="ai-output-section" style="display: none; margin-top: 25px;">
         <h4>Editable Narrative Report</h4>
         <textarea id="final-report-text" rows="12"></textarea>
@@ -140,44 +138,34 @@
       </div>
     </div>
 
-    <!-- TAB 3: MINUTES OF MEETING (MOM) GENERATOR -->
+    <!-- TAB 3: MINUTES OF MEETING (MOM) -->
     <div id="tab-mom" class="tab-content">
-      <div class="mom-meta-grid">
-        <div class="form-group">
-          <label><strong>Meeting Title:</strong></label>
-          <input type="text" id="mom-title" value="Minutes of Meeting - Nursing Department">
-        </div>
-        <div class="form-group">
-          <label><strong>Meeting Date:</strong></label>
-          <input type="text" id="mom-date" placeholder="e.g. 28/09/2026">
-        </div>
-        <div class="form-group">
-          <label><strong>Prepared By:</strong></label>
-          <input type="text" id="mom-prepared" value="DANY MATHEW">
-        </div>
-        <div class="form-group">
-          <label><strong>Approved By:</strong></label>
-          <input type="text" id="mom-approved" placeholder="Leave blank for signature or type name">
-        </div>
+      <div class="grid-card">
+        <div class="form-group"><label><strong>Meeting Title:</strong></label><input type="text" id="mom-title"
+            value="Minutes of Meeting - Nursing Department"></div>
+        <div class="form-group"><label><strong>Meeting Date:</strong></label><input type="text" id="mom-date"
+            placeholder="e.g. 28/09/2026"></div>
+        <div class="form-group"><label><strong>Prepared By:</strong></label><input type="text" id="mom-prepared"
+            value="DANY MATHEW"></div>
+        <div class="form-group"><label><strong>Approved By:</strong></label><input type="text" id="mom-approved"
+            placeholder="Leave blank for signature"></div>
       </div>
 
-      <div class="mom-quick-ai-box">
+      <div class="grid-card" style="background: #f0f4f8; border-color: #d9e2ec;">
         <label><strong>➕ Add New Discussion Points with AI (Optional)</strong></label>
         <p class="sub-hint-sm" style="margin: 3px 0 6px 0;">Type rough points discussed in today's meeting. AI will
-          format them into professional MOM rows and add them to the table below.</p>
+          format them and append them to the table below.</p>
         <textarea id="mom-rough-notes" rows="2"
-          placeholder="e.g. Discussed crash cart checking before every shift, nursing TL must verify expiry dates..."></textarea>
+          placeholder="e.g. Discussed crash cart checking before every shift..."></textarea>
         <button class="btn btn-ai-table" style="margin-top: 8px; padding: 10px;"
           onclick="appendRoughNotesToMOMWithAI()">✨ Convert Rough Notes & Append to MOM Table (AI)</button>
       </div>
-
       <div id="mom-loading" class="loading">Communicating with AI... Please wait...</div>
 
       <div class="table-header-bar" style="margin-top: 20px;">
         <div>
           <h4 style="margin: 0;">Editable MOM Table</h4>
-          <span class="sub-hint-sm">Pre-populated with standard points. Tap any cell to edit, <strong>✨</strong> to
-            polish a row, or <strong>&times;</strong> to remove.</span>
+          <span class="sub-hint-sm">Pre-populated with standard points. Tap any cell to edit.</span>
         </div>
         <div style="display: flex; gap: 8px;">
           <button class="btn btn-secondary" onclick="addEmptyMOMRow()">+ Add Row</button>
@@ -185,7 +173,6 @@
             Default 8 Topics</button>
         </div>
       </div>
-
       <div class="table-wrapper">
         <table class="activity-table" id="editable-mom-table">
           <thead>
@@ -201,42 +188,116 @@
           <tbody id="mom-table-body"></tbody>
         </table>
       </div>
-
       <div class="button-group">
         <button class="btn btn-polish" onclick="polishEntireMOMWithAI()">✨ Polish All MOM Edits with AI</button>
         <button class="btn btn-pdf" onclick="downloadMOMPDF()">📄 Download MOM PDF</button>
       </div>
     </div>
 
-    <!-- TAB 4: CLINICAL ROUNDING (DAILY & WEEKLY) -->
+    <!-- TAB 4: CLINICAL ROUNDING (REBUILT FOR COMPREHENSIVE NABH FRAMEWORK) -->
     <div id="tab-rounding" class="tab-content">
-      <!-- Daily Tracker Section -->
-      <div class="rounding-box">
-        <div class="date-selector-row">
-          <h4>Daily Leadership Rounding</h4>
-          <div style="display: flex; align-items: center; gap: 10px;">
-            <label style="font-weight: bold; font-size: 14px; color: #163a5f;">Select Date:</label>
-            <input type="date" id="rounding-date" onchange="loadRoundingDataForDate()">
-          </div>
+
+      <!-- Date Selector Header -->
+      <div class="date-selector-row"
+        style="background: #163a5f; padding: 15px; border-radius: 6px; color: white; margin-bottom: 20px;">
+        <h4 style="margin: 0; color: white;">Daily Leadership Rounding</h4>
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <label style="font-weight: bold; font-size: 14px;">Select Date:</label>
+          <input type="date" id="rounding-date" onchange="loadRoundingDataForDate()"
+            style="padding: 6px; border-radius: 4px; border: none;">
         </div>
+      </div>
+
+      <!-- Section A: Unit Details (Page 3 / 8) -->
+      <div class="grid-card">
+        <h4 class="section-heading">1. Unit Details & General Information</h4>
+        <div class="form-group"><label>Unit/Department:</label><input type="text" id="round-unit"></div>
+        <div class="form-group">
+          <label>Shift:</label>
+          <select id="round-shift" class="round-input">
+            <option value="Morning">Morning</option>
+            <option value="Evening">Evening</option>
+            <option value="Night">Night</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Rounding Leader:</label><input type="text" id="round-leader"></div>
+        <div class="form-group"><label>Nurse In-charge:</label><input type="text" id="round-incharge"></div>
+        <div class="form-group"><label>Total / Occupied Beds:</label><input type="text" id="round-beds"
+            placeholder="e.g. 15 / 12"></div>
+        <div class="form-group"><label>Required / Available Staff:</label><input type="text" id="round-staff"
+            placeholder="e.g. 5 / 4"></div>
+        <div class="form-group"><label>High-risk Patients/Concerns:</label><textarea id="round-highrisk"
+            rows="2"></textarea></div>
+      </div>
+
+      <!-- Section B: Checkpoints (Page 2) -->
+      <div class="grid-card">
+        <h4 class="section-heading">2. Nursing Leadership Checkpoints</h4>
         <p class="sub-hint-sm" style="margin-bottom: 15px;">Rating Scale: C (Compliant), PC (Partially Compliant), NC
           (Non-compliant), NA (Not Applicable), CR (Critical Risk)</p>
+        <div id="checkpoints-container"></div>
+      </div>
 
-        <div id="checkpoints-container">
-          <!-- Javascript will inject the 14 NABH/JCI checkpoints here -->
+      <!-- Section C: CAPA Tracker (Page 16) -->
+      <div class="grid-card">
+        <div class="table-header-bar" style="margin-bottom: 10px;">
+          <div>
+            <h4 class="section-heading" style="margin: 0;">3. Corrective Action Tracker (CAPA)</h4>
+            <span class="sub-hint-sm">Log critical gaps, assign risk levels, and track closure.</span>
+          </div>
+          <button class="btn btn-secondary" onclick="addCapaRow()">+ Add Action</button>
         </div>
+        <div class="table-wrapper">
+          <table class="activity-table" id="capa-table">
+            <thead>
+              <tr>
+                <th style="width:25%">Gap Observation</th>
+                <th style="width:12%">Risk</th>
+                <th style="width:25%">Immediate Correction</th>
+                <th style="width:15%">Responsible</th>
+                <th style="width:15%">Status</th>
+                <th style="width:8%"></th>
+              </tr>
+            </thead>
+            <tbody id="capa-table-body"></tbody>
+          </table>
+        </div>
+      </div>
 
-        <button class="btn btn-excel" style="margin-top: 20px; background-color: #198754;"
-          onclick="saveRoundingDataForDate()">💾 Save Today's Round</button>
+      <!-- Section D: Daily Summary (Page 17) -->
+      <div class="grid-card">
+        <h4 class="section-heading">4. Rounding Summary</h4>
+        <div class="form-group">
+          <label>Overall Unit Status:</label>
+          <select id="round-overall-status" class="round-input">
+            <option value="Stable">Stable</option>
+            <option value="Needs improvement">Needs improvement</option>
+            <option value="Critical concern">Critical concern</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label>Staffing Adequacy:</label>
+          <select id="round-staffing-status" class="round-input">
+            <option value="Adequate">Adequate</option>
+            <option value="Gap identified">Gap identified</option>
+          </select>
+        </div>
+        <div class="form-group"><label>Priority actions for next 24hrs:</label><textarea id="round-priority"
+            rows="2"></textarea></div>
+        <div class="form-group"><label>Issues requiring mgmt support:</label><textarea id="round-support"
+            rows="2"></textarea></div>
+
+        <button class="btn btn-excel" style="margin-top: 25px; background-color: #198754;"
+          onclick="saveRoundingDataForDate()">💾 Save Today's Comprehensive Round</button>
         <p class="sub-hint-sm" style="text-align: center; margin-top: 8px;">Saved locally on this device. Change the
-          date above to view or edit past days.</p>
+          date at the top to view past days.</p>
       </div>
 
       <!-- Weekly AI Report & Export Section -->
-      <div class="rounding-box" style="margin-top: 25px; border-top: 4px solid #163a5f;">
-        <h4>Generate Weekly Report</h4>
-        <p class="sub-hint-sm" style="margin-top: -5px; margin-bottom: 15px;">Select a date range to synthesize all
-          saved daily notes into a formal weekly summary, or export raw data to Excel for backup.</p>
+      <div class="grid-card" style="margin-top: 25px; border-top: 4px solid #163a5f;">
+        <h4 class="section-heading">Generate Weekly Report & Export</h4>
+        <p class="sub-hint-sm" style="margin-top: -5px; margin-bottom: 15px;">Select a date range to synthesize saved
+          daily notes into a formal weekly summary, or export ALL raw data directly to an Excel file.</p>
 
         <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
           <div style="flex: 1; min-width: 130px;">
@@ -254,7 +315,8 @@
         <div class="button-group">
           <button class="btn btn-ai-table" onclick="generateWeeklyRoundingReport()">✨ Generate Weekly Summary
             (AI)</button>
-          <button class="btn btn-excel" onclick="exportRoundingDataToExcel()">📊 Export All Data to Excel</button>
+          <button class="btn btn-excel" onclick="exportRoundingDataToExcel()">📊 Export All Data to Excel
+            (.xls)</button>
         </div>
 
         <div id="rounding-loading" class="loading">Communicating with AI... Please wait...</div>
@@ -271,7 +333,7 @@
     <!-- SHARED API SETTINGS -->
     <button class="api-toggle-btn" onclick="toggleApiSettings()">⚙️ AI Configuration Settings</button>
     <div class="api-settings" id="apiSettingsPanel">
-      <p><strong>Universal AI Configuration (Supports Gemini, Groq, ChatGPT, or Claude)</strong></p>
+      <p><strong>Universal AI Configuration</strong></p>
       <div class="api-flex">
         <input type="password" id="api-key-input"
           placeholder="Paste Gemini (AIza...), Groq (gsk_...), or OpenAI/Claude key...">
@@ -279,8 +341,6 @@
           style="padding: 8px 15px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: white;">Save
           Key</button>
       </div>
-      <p style="margin-top: 5px; font-size: 11px;">Your key is stored locally on this device. Supports Google Gemini,
-        Groq (Free Llama 3.3), OpenAI, and Claude.</p>
     </div>
   </div>
 
