@@ -13,7 +13,7 @@
   <div class="container">
     <h2>Nursing Management Toolkit</h2>
 
-    <!-- 4-Tab Navigation -->
+    <!-- MAIN NAVIGATION -->
     <div class="tabs">
       <button class="tab-btn active" onclick="switchTab('tab-analyzer', this)">Workforce</button>
       <button class="tab-btn" onclick="switchTab('tab-activity', this)">Activity</button>
@@ -29,14 +29,12 @@
       </div>
       <div class="form-group"><label>Target Max Patients per Nurse:</label><input type="number" id="targetRatio"
           value="6" style="background-color: #e8f4f8; font-weight: bold;"></div>
-
       <hr>
       <h4>Staffing & Shift Requirements</h4>
       <div class="form-group"><label>Total Current Staff:</label><input type="number" id="staff" value="8"></div>
       <div class="form-group"><label>Days in Month:</label><input type="number" id="days" value="30"></div>
       <div class="form-group"><label>Nurses Assigned Per Shift (M, E, N):</label><input type="number"
           id="nursesPerShift" value="2"></div>
-
       <hr>
       <h4>Leaves Per Staff Member</h4>
       <div class="form-group"><label>Weekly Offs:</label><input type="number" id="weeklyOffs" value="4"></div>
@@ -45,9 +43,7 @@
       <div class="form-group"><label>Public Holidays (PH):</label><input type="number" id="ph" value="1"></div>
       <div class="form-group"><label>Emergency Leave Reserve:</label><input type="number" id="emergency" value="0">
       </div>
-
       <button class="btn" onclick="calculateAnalyzer()">Analyze Workforce</button>
-
       <div class="results" id="results">
         <p>Maximum Patient Load: <strong id="resMaxPatients"></strong></p>
         <p>Actual Assigned Ratio: <strong id="resRatio"></strong></p>
@@ -56,7 +52,6 @@
         <p>Total Available Staff Shifts: <strong id="resAvailable"></strong></p>
         <p>Shift Surplus / Deficit: <strong id="resMargin"></strong></p>
         <p>Verdict: <span id="resStatus"></span></p>
-
         <div class="button-group">
           <button class="btn btn-excel" onclick="downloadCSV()">Download Excel</button>
           <button class="btn btn-pdf" onclick="downloadAnalyzerPDF()">Download PDF</button>
@@ -64,33 +59,21 @@
       </div>
     </div>
 
-    <!-- TAB 2: ACTIVITY REPORT GENERATOR -->
+    <!-- TAB 2: ACTIVITY REPORT -->
     <div id="tab-activity" class="tab-content">
       <div class="form-group meta-box">
         <label><strong>Report Month & Year:</strong></label>
         <input type="text" id="report-month" placeholder="e.g. AUGUST - 2026">
       </div>
-
       <h4>Rough Monthly Notes</h4>
-      <p class="sub-hint">Jot down rough points collected over the month. Choose either Tabular or Narrative format
-        below.</p>
-
       <label><strong>1. Patient Care & Safety (Gynae, Paeds, Post-op)</strong></label>
-      <textarea id="note-patient" rows="3"
-        placeholder="e.g. Daily IP rounds, patient feedback collection, raised 1 medication error incident report..."></textarea><br><br>
-
+      <textarea id="note-patient" rows="3"></textarea><br><br>
       <label><strong>2. Nursing Documentation</strong></label>
-      <textarea id="note-docs" rows="3"
-        placeholder="e.g. Processed 52 patient discharge files, verified post-op education notes..."></textarea><br><br>
-
+      <textarea id="note-docs" rows="3"></textarea><br><br>
       <label><strong>3. Staff Development</strong></label>
-      <textarea id="note-staff" rows="3"
-        placeholder="e.g. Conducted vaccination training session for gynaecology ward staff..."></textarea><br><br>
-
+      <textarea id="note-staff" rows="3"></textarea><br><br>
       <label><strong>4. Ward Management (Stock, Inventory & Meetings)</strong></label>
-      <textarea id="note-ward" rows="3"
-        placeholder="e.g. Department stock audit completed, conducted monthly nursing floor meeting..."></textarea>
-
+      <textarea id="note-ward" rows="3"></textarea>
       <div class="button-group">
         <button class="btn btn-ai-table" onclick="generateAIReport('table')">📊 Generate Tabular Report (AI)</button>
         <button class="btn btn-ai-text" onclick="generateAIReport('narrative')">📝 Generate Narrative Report
@@ -100,11 +83,7 @@
 
       <div id="ai-table-section" style="display: none; margin-top: 25px;">
         <div class="table-header-bar">
-          <div>
-            <h4 style="margin: 0;">Editable Tabular Report</h4>
-            <span class="sub-hint-sm">Tap any cell to edit. Tap <strong>✨</strong> on a row to polish just that row, or
-              polish the whole table below.</span>
-          </div>
+          <h4 style="margin: 0;">Editable Tabular Report</h4>
           <button class="btn btn-secondary" onclick="addEmptyTableRow()">+ Add Row</button>
         </div>
         <div class="table-wrapper">
@@ -123,8 +102,8 @@
           </table>
         </div>
         <div class="button-group">
-          <button class="btn btn-polish" onclick="polishEntireTableWithAI()">✨ Polish All Table Edits with AI</button>
-          <button class="btn btn-pdf" onclick="downloadTabularActivityPDF()">📄 Download Tabular PDF</button>
+          <button class="btn btn-polish" onclick="polishEntireTableWithAI()">✨ Polish Table Edits</button>
+          <button class="btn btn-pdf" onclick="downloadTabularActivityPDF()">📄 Download PDF</button>
         </div>
       </div>
 
@@ -132,45 +111,35 @@
         <h4>Editable Narrative Report</h4>
         <textarea id="final-report-text" rows="12"></textarea>
         <div class="button-group">
-          <button class="btn btn-polish" onclick="polishNarrativeWithAI()">✨ Polish Edited Text with AI</button>
-          <button class="btn btn-pdf" onclick="downloadNarrativeActivityPDF()">📄 Download Narrative PDF</button>
+          <button class="btn btn-polish" onclick="polishNarrativeWithAI()">✨ Polish Edited Text</button>
+          <button class="btn btn-pdf" onclick="downloadNarrativeActivityPDF()">📄 Download PDF</button>
         </div>
       </div>
     </div>
 
-    <!-- TAB 3: MINUTES OF MEETING (MOM) -->
+    <!-- TAB 3: MINUTES OF MEETING -->
     <div id="tab-mom" class="tab-content">
       <div class="grid-card">
         <div class="form-group"><label><strong>Meeting Title:</strong></label><input type="text" id="mom-title"
             value="Minutes of Meeting - Nursing Department"></div>
-        <div class="form-group"><label><strong>Meeting Date:</strong></label><input type="text" id="mom-date"
-            placeholder="e.g. 28/09/2026"></div>
+        <div class="form-group"><label><strong>Meeting Date:</strong></label><input type="text" id="mom-date"></div>
         <div class="form-group"><label><strong>Prepared By:</strong></label><input type="text" id="mom-prepared"
             value="DANY MATHEW"></div>
-        <div class="form-group"><label><strong>Approved By:</strong></label><input type="text" id="mom-approved"
-            placeholder="Leave blank for signature"></div>
+        <div class="form-group"><label><strong>Approved By:</strong></label><input type="text" id="mom-approved"></div>
       </div>
-
-      <div class="grid-card" style="background: #f0f4f8; border-color: #d9e2ec;">
-        <label><strong>➕ Add New Discussion Points with AI (Optional)</strong></label>
-        <p class="sub-hint-sm" style="margin: 3px 0 6px 0;">Type rough points discussed in today's meeting. AI will
-          format them and append them to the table below.</p>
-        <textarea id="mom-rough-notes" rows="2"
-          placeholder="e.g. Discussed crash cart checking before every shift..."></textarea>
+      <div class="mom-quick-ai-box">
+        <label><strong>➕ Add New Discussion Points with AI</strong></label>
+        <textarea id="mom-rough-notes" rows="2" placeholder="e.g. Discussed crash cart checking..."></textarea>
         <button class="btn btn-ai-table" style="margin-top: 8px; padding: 10px;"
-          onclick="appendRoughNotesToMOMWithAI()">✨ Convert Rough Notes & Append to MOM Table (AI)</button>
+          onclick="appendRoughNotesToMOMWithAI()">✨ Convert Rough Notes & Append (AI)</button>
       </div>
       <div id="mom-loading" class="loading">Communicating with AI... Please wait...</div>
-
       <div class="table-header-bar" style="margin-top: 20px;">
-        <div>
-          <h4 style="margin: 0;">Editable MOM Table</h4>
-          <span class="sub-hint-sm">Pre-populated with standard points. Tap any cell to edit.</span>
-        </div>
+        <h4 style="margin: 0;">Editable MOM Table</h4>
         <div style="display: flex; gap: 8px;">
           <button class="btn btn-secondary" onclick="addEmptyMOMRow()">+ Add Row</button>
           <button class="btn btn-secondary" style="background-color: #495057;" onclick="resetDefaultMOMRows()">↺ Reset
-            Default 8 Topics</button>
+            Default 8</button>
         </div>
       </div>
       <div class="table-wrapper">
@@ -189,143 +158,190 @@
         </table>
       </div>
       <div class="button-group">
-        <button class="btn btn-polish" onclick="polishEntireMOMWithAI()">✨ Polish All MOM Edits with AI</button>
-        <button class="btn btn-pdf" onclick="downloadMOMPDF()">📄 Download MOM PDF</button>
+        <button class="btn btn-polish" onclick="polishEntireMOMWithAI()">✨ Polish MOM Edits</button>
+        <button class="btn btn-pdf" onclick="downloadMOMPDF()">📄 Download PDF</button>
       </div>
     </div>
 
-    <!-- TAB 4: CLINICAL ROUNDING (REBUILT FOR COMPREHENSIVE NABH FRAMEWORK) -->
+    <!-- TAB 4: CLINICAL ROUNDING (FULL NABH/JCI FRAMEWORK) -->
     <div id="tab-rounding" class="tab-content">
 
-      <!-- Date Selector Header -->
+      <!-- GLOBAL DATE SELECTOR FOR ROUNDING -->
       <div class="date-selector-row"
-        style="background: #163a5f; padding: 15px; border-radius: 6px; color: white; margin-bottom: 20px;">
+        style="background: #163a5f; padding: 15px; border-radius: 6px; color: white; margin-bottom: 15px;">
         <h4 style="margin: 0; color: white;">Daily Leadership Rounding</h4>
         <div style="display: flex; align-items: center; gap: 10px;">
           <label style="font-weight: bold; font-size: 14px;">Select Date:</label>
           <input type="date" id="rounding-date" onchange="loadRoundingDataForDate()"
-            style="padding: 6px; border-radius: 4px; border: none;">
+            style="padding: 6px; border-radius: 4px; border: none; font-family: inherit;">
         </div>
       </div>
 
-      <!-- Section A: Unit Details (Page 3 / 8) -->
-      <div class="grid-card">
-        <h4 class="section-heading">1. Unit Details & General Information</h4>
-        <div class="form-group"><label>Unit/Department:</label><input type="text" id="round-unit"></div>
-        <div class="form-group">
-          <label>Shift:</label>
-          <select id="round-shift" class="round-input">
-            <option value="Morning">Morning</option>
-            <option value="Evening">Evening</option>
-            <option value="Night">Night</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Rounding Leader:</label><input type="text" id="round-leader"></div>
-        <div class="form-group"><label>Nurse In-charge:</label><input type="text" id="round-incharge"></div>
-        <div class="form-group"><label>Total / Occupied Beds:</label><input type="text" id="round-beds"
-            placeholder="e.g. 15 / 12"></div>
-        <div class="form-group"><label>Required / Available Staff:</label><input type="text" id="round-staff"
-            placeholder="e.g. 5 / 4"></div>
-        <div class="form-group"><label>High-risk Patients/Concerns:</label><textarea id="round-highrisk"
-            rows="2"></textarea></div>
+      <!-- ROUNDING SUB-TABS -->
+      <div class="sub-tabs">
+        <button class="sub-tab-btn active" onclick="switchSubTab('sub-quick', this)">Quick Round (Pg 1-3)</button>
+        <button class="sub-tab-btn" onclick="switchSubTab('sub-comp', this)">Comprehensive (Pg 8-18)</button>
+        <button class="sub-tab-btn" onclick="switchSubTab('sub-reports', this)"
+          style="background:#e8f4f8; color:#163a5f;">Reports & Export</button>
       </div>
 
-      <!-- Section B: Checkpoints (Page 2) -->
-      <div class="grid-card">
-        <h4 class="section-heading">2. Nursing Leadership Checkpoints</h4>
-        <p class="sub-hint-sm" style="margin-bottom: 15px;">Rating Scale: C (Compliant), PC (Partially Compliant), NC
-          (Non-compliant), NA (Not Applicable), CR (Critical Risk)</p>
-        <div id="checkpoints-container"></div>
-      </div>
-
-      <!-- Section C: CAPA Tracker (Page 16) -->
-      <div class="grid-card">
-        <div class="table-header-bar" style="margin-bottom: 10px;">
-          <div>
-            <h4 class="section-heading" style="margin: 0;">3. Corrective Action Tracker (CAPA)</h4>
-            <span class="sub-hint-sm">Log critical gaps, assign risk levels, and track closure.</span>
-          </div>
-          <button class="btn btn-secondary" onclick="addCapaRow()">+ Add Action</button>
+      <!-- SUB-TAB: QUICK ROUND (Pages 1-3) -->
+      <div id="sub-quick" class="sub-tab-content active">
+        <div class="grid-card">
+          <h4 class="section-heading">Section 1. Document Control</h4>
+          <div id="quick-doc-control"></div>
         </div>
-        <div class="table-wrapper">
-          <table class="activity-table" id="capa-table">
-            <thead>
-              <tr>
-                <th style="width:25%">Gap Observation</th>
-                <th style="width:12%">Risk</th>
-                <th style="width:25%">Immediate Correction</th>
-                <th style="width:15%">Responsible</th>
-                <th style="width:15%">Status</th>
-                <th style="width:8%"></th>
-              </tr>
-            </thead>
-            <tbody id="capa-table-body"></tbody>
-          </table>
-        </div>
-      </div>
 
-      <!-- Section D: Daily Summary (Page 17) -->
-      <div class="grid-card">
-        <h4 class="section-heading">4. Rounding Summary</h4>
-        <div class="form-group">
-          <label>Overall Unit Status:</label>
-          <select id="round-overall-status" class="round-input">
-            <option value="Stable">Stable</option>
-            <option value="Needs improvement">Needs improvement</option>
-            <option value="Critical concern">Critical concern</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label>Staffing Adequacy:</label>
-          <select id="round-staffing-status" class="round-input">
-            <option value="Adequate">Adequate</option>
-            <option value="Gap identified">Gap identified</option>
-          </select>
-        </div>
-        <div class="form-group"><label>Priority actions for next 24hrs:</label><textarea id="round-priority"
-            rows="2"></textarea></div>
-        <div class="form-group"><label>Issues requiring mgmt support:</label><textarea id="round-support"
-            rows="2"></textarea></div>
-
-        <button class="btn btn-excel" style="margin-top: 25px; background-color: #198754;"
-          onclick="saveRoundingDataForDate()">💾 Save Today's Comprehensive Round</button>
-        <p class="sub-hint-sm" style="text-align: center; margin-top: 8px;">Saved locally on this device. Change the
-          date at the top to view past days.</p>
-      </div>
-
-      <!-- Weekly AI Report & Export Section -->
-      <div class="grid-card" style="margin-top: 25px; border-top: 4px solid #163a5f;">
-        <h4 class="section-heading">Generate Weekly Report & Export</h4>
-        <p class="sub-hint-sm" style="margin-top: -5px; margin-bottom: 15px;">Select a date range to synthesize saved
-          daily notes into a formal weekly summary, or export ALL raw data directly to an Excel file.</p>
-
-        <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-          <div style="flex: 1; min-width: 130px;">
-            <label style="font-size: 13px; font-weight: 600;">Start Date:</label>
-            <input type="date" id="report-start-date"
-              style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
-          </div>
-          <div style="flex: 1; min-width: 130px;">
-            <label style="font-size: 13px; font-weight: 600;">End Date:</label>
-            <input type="date" id="report-end-date"
-              style="width: 100%; padding: 8px; border: 1px solid #ccc; border-radius: 4px;">
+        <div class="grid-card">
+          <h4 class="section-heading">Section 2. Common Nursing Leadership Checklist</h4>
+          <p class="sub-hint-sm" style="margin-bottom:10px;">Rating: C (Compliant), PC (Partially Compliant), NC
+            (Non-compliant), NA (Not Applicable), CR (Critical Risk)</p>
+          <div class="table-wrapper">
+            <table class="activity-table">
+              <thead>
+                <tr>
+                  <th style="width: 5%">No.</th>
+                  <th style="width: 45%">Common checkpoint</th>
+                  <th style="width: 15%">Rating</th>
+                  <th style="width: 35%">Findings / Action</th>
+                </tr>
+              </thead>
+              <tbody id="quick-sec2-body"></tbody>
+            </table>
           </div>
         </div>
 
-        <div class="button-group">
-          <button class="btn btn-ai-table" onclick="generateWeeklyRoundingReport()">✨ Generate Weekly Summary
-            (AI)</button>
-          <button class="btn btn-excel" onclick="exportRoundingDataToExcel()">📊 Export All Data to Excel
-            (.xls)</button>
+        <div class="grid-card">
+          <h4 class="section-heading">Unit Details</h4>
+          <div id="quick-unit-details"></div>
         </div>
 
-        <div id="rounding-loading" class="loading">Communicating with AI... Please wait...</div>
+        <button class="btn btn-excel" style="background-color: #198754;" onclick="saveRoundingDataForDate()">💾 Save
+          Quick Round</button>
+      </div>
 
-        <div id="rounding-output-section" style="display: none; margin-top: 20px;">
-          <h4 style="margin-bottom: 10px;">Executive Weekly Summary (Editable)</h4>
-          <textarea id="rounding-final-report" rows="12"></textarea>
-          <button class="btn btn-pdf" onclick="downloadRoundingWeeklyPDF()" style="margin-top: 10px;">📄 Download Weekly
-            PDF</button>
+      <!-- SUB-TAB: COMPREHENSIVE ROUND (Pages 8-18) -->
+      <div id="sub-comp" class="sub-tab-content">
+        <div class="grid-card">
+          <h4 class="section-heading">A. General Information</h4>
+          <div id="comp-general-info"></div>
+        </div>
+
+        <div class="grid-card">
+          <h4 class="section-heading">B. Nursing Station & Ward Management (41 Items)</h4>
+          <p class="sub-hint-sm" style="margin-bottom:10px;">Status codes: C (Compliant), NC (Non-compliant), NA (Not
+            applicable)</p>
+          <div class="table-wrapper">
+            <table class="activity-table">
+              <thead>
+                <tr>
+                  <th style="width: 5%">No.</th>
+                  <th style="width: 45%">Observation point</th>
+                  <th style="width: 15%">Rating</th>
+                  <th style="width: 35%">Findings / Action</th>
+                </tr>
+              </thead>
+              <tbody id="comp-secB-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-card">
+          <h4 class="section-heading">3. Clinical Patient Rounding Checklist (14 Items)</h4>
+          <div class="table-wrapper">
+            <table class="activity-table">
+              <thead>
+                <tr>
+                  <th style="width: 5%">No.</th>
+                  <th style="width: 35%">Clinical parameter</th>
+                  <th style="width: 15%">Rating</th>
+                  <th style="width: 45%">Findings / Action</th>
+                </tr>
+              </thead>
+              <tbody id="comp-sec3-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-card">
+          <div class="table-header-bar" style="margin-bottom: 10px;">
+            <h4 class="section-heading" style="margin: 0; border:none;">4. Unit Stabilization & Corrective Action (CAPA)
+            </h4>
+            <button class="btn btn-secondary" onclick="addCapaRow()">+ Add Action</button>
+          </div>
+          <div class="table-wrapper">
+            <table class="activity-table">
+              <thead>
+                <tr>
+                  <th style="width:25%">Gap Observation</th>
+                  <th style="width:12%">Risk Level</th>
+                  <th style="width:20%">Immediate Correction</th>
+                  <th style="width:15%">Responsible</th>
+                  <th style="width:14%">Target Date</th>
+                  <th style="width:14%">Closure Verified By</th>
+                  <th style="width:5%"></th>
+                </tr>
+              </thead>
+              <tbody id="capa-table-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="grid-card">
+          <h4 class="section-heading">5. Nursing Leadership Rounding Summary</h4>
+          <div class="form-group">
+            <label>Overall Unit Status:</label>
+            <select id="comp-sum-overall" class="round-input">
+              <option value="Stable">Stable</option>
+              <option value="Needs improvement">Needs improvement</option>
+              <option value="Critical concern">Critical concern</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Staffing Adequacy:</label>
+            <select id="comp-sum-staffing" class="round-input">
+              <option value="Adequate">Adequate</option>
+              <option value="Gap identified">Gap identified</option>
+            </select>
+          </div>
+          <div id="comp-summary-text-fields"></div>
+          <hr>
+          <div id="comp-summary-signatures"></div>
+        </div>
+
+        <button class="btn btn-excel" style="background-color: #198754;" onclick="saveRoundingDataForDate()">💾 Save
+          Comprehensive Round</button>
+      </div>
+
+      <!-- SUB-TAB: REPORTS & EXPORT -->
+      <div id="sub-reports" class="sub-tab-content">
+        <div class="grid-card">
+          <h4 class="section-heading">Generate Weekly Report & Export</h4>
+          <p class="sub-hint-sm" style="margin-top: -5px; margin-bottom: 15px;">Select a date range to synthesize all
+            saved rounds into a formal weekly AI summary, or export raw data directly to Excel.</p>
+
+          <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+            <div style="flex: 1; min-width: 130px;"><label style="font-size: 13px; font-weight: 600;">Start
+                Date:</label><input type="date" id="report-start-date" style="width: 100%;"></div>
+            <div style="flex: 1; min-width: 130px;"><label style="font-size: 13px; font-weight: 600;">End
+                Date:</label><input type="date" id="report-end-date" style="width: 100%;"></div>
+          </div>
+
+          <div class="button-group">
+            <button class="btn btn-ai-table" onclick="generateWeeklyRoundingReport()">✨ Generate Weekly AI
+              Summary</button>
+            <button class="btn btn-excel" onclick="exportRoundingDataToExcel()">📊 Export All Data to Excel
+              (.xls)</button>
+          </div>
+
+          <div id="rounding-loading" class="loading">Communicating with AI... Please wait...</div>
+
+          <div id="rounding-output-section" style="display: none; margin-top: 20px;">
+            <h4 style="margin-bottom: 10px;">Executive Weekly Summary (Editable)</h4>
+            <textarea id="rounding-final-report" rows="12"></textarea>
+            <button class="btn btn-pdf" onclick="downloadRoundingWeeklyPDF()" style="margin-top: 10px;">📄 Download
+              Weekly PDF</button>
+          </div>
         </div>
       </div>
     </div>
@@ -335,11 +351,8 @@
     <div class="api-settings" id="apiSettingsPanel">
       <p><strong>Universal AI Configuration</strong></p>
       <div class="api-flex">
-        <input type="password" id="api-key-input"
-          placeholder="Paste Gemini (AIza...), Groq (gsk_...), or OpenAI/Claude key...">
-        <button onclick="saveApiKey()"
-          style="padding: 8px 15px; cursor: pointer; border-radius: 4px; border: 1px solid #ccc; background: white;">Save
-          Key</button>
+        <input type="password" id="api-key-input" placeholder="Paste Gemini, Groq, or OpenAI key...">
+        <button onclick="saveApiKey()" style="padding: 8px 15px;">Save Key</button>
       </div>
     </div>
   </div>
