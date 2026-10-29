@@ -115,7 +115,7 @@ function saveApiKey() {
 }
 
 // ============================================================================
-// UNIVERSAL AI ROUTER (WITH DYNAMIC SERVER DETECTION)
+// UNIVERSAL AI ROUTER
 // ============================================================================
 async function callAIProvider(prompt, apiKey, loadingEl) {
     if (apiKey.startsWith("gsk_")) {
@@ -125,51 +125,29 @@ async function callAIProvider(prompt, apiKey, loadingEl) {
         const res = await fetch("https://api.openai.com/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` }, body: JSON.stringify({ model: "gpt-4o-mini", temperature: 0.2, messages: [{ role: "user", content: prompt }] }) });
         const data = await res.json(); if (data.error) throw new Error(data.error.message); return data.choices[0].message.content;
     } else {
-        
-        // 1. Initial preferred models
         let candidateModels = ['gemini-3.8-flash-lite', 'gemini-3.8-flash', 'gemini-pro', 'gemini-2.0-flash'];
-        
-        // 2. DYNAMICALLY ASK GOOGLE WHAT IS AVAILABLE FOR THIS SPECIFIC KEY
         try {
             if (loadingEl) loadingEl.innerText = `Scanning available AI servers...`;
             const listRes = await fetch(`https://generativelanguage.googleapis.com/v1beta/models?key=${apiKey}`);
             const listData = await listRes.json();
-            
             if (listData.models) {
                 const available = listData.models
                     .filter(m => m.supportedGenerationMethods && m.supportedGenerationMethods.includes("generateContent"))
                     .map(m => m.name.replace("models/", ""))
                     .filter(name => !name.includes("tts") && !name.includes("image") && !name.includes("embedding") && !name.includes("vision") && !name.includes("thinking"));
-                
-                // Prioritize our favorites, then add everything else that is open
                 const prioritized = candidateModels.filter(m => available.includes(m));
                 const others = available.filter(m => !prioritized.includes(m));
-                if (prioritized.length > 0 || others.length > 0) {
-                    candidateModels = [...prioritized, ...others];
-                }
+                if (prioritized.length > 0 || others.length > 0) candidateModels = [...prioritized, ...others];
             }
-        } catch (e) {
-            console.warn("Could not fetch list. Falling back to defaults.");
-        }
+        } catch (e) { console.warn("Could not fetch list. Falling back to defaults."); }
 
-        // 3. TRY AVAILABLE MODELS ONE BY ONE
         let lastError = "";
         for (const model of candidateModels) {
             try {
                 if (loadingEl) loadingEl.innerText = `Communicating with AI (${model})...`;
-                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, { 
-                    method: 'POST', 
-                    headers: { 'Content-Type': 'application/json' }, 
-                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2 } }) 
-                });
-                
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.2 } }) });
                 const data = await response.json();
-                
-                // If this specific model fails, forcefully throw error to trigger the catch block and try the next model
-                if (data.error) {
-                    throw new Error(data.error.message);
-                }
-                
+                if (data.error) throw new Error(data.error.message);
                 const parts = data.candidates?.[0]?.content?.parts;
                 if (Array.isArray(parts) && parts.length > 0) {
                     const ans = parts.filter(p => !p.thought && p.text?.trim().length > 0);
@@ -177,7 +155,6 @@ async function callAIProvider(prompt, apiKey, loadingEl) {
                 }
             } catch (err) { 
                 lastError = err.message; 
-                console.warn(`Model ${model} failed, moving to next available...`);
             }
         }
         throw new Error(lastError || "All Gemini servers are currently busy or unavailable for this key. Please try again.");
@@ -195,7 +172,7 @@ function genInput(idPrefix, label, isTextarea = false) {
 }
 
 function renderClinicalRoundingForms() {
-    // --- QUICK ROUND (Pages 1-3) ---
+    // --- QUICK ROUND ---
     const qDoc = document.getElementById('quick-doc-control');
     QUICK_DOC_CONTROL.forEach((l, i) => qDoc.innerHTML += genInput(`q-doc-${i}`, l));
     
@@ -207,7 +184,7 @@ function renderClinicalRoundingForms() {
     const qUnit = document.getElementById('quick-unit-details');
     QUICK_UNIT_DETAILS.forEach((l, i) => qUnit.innerHTML += genInput(`q-unit-${i}`, l, l.includes('High-risk')));
 
-    // --- COMPREHENSIVE ROUND (Pages 8-18) ---
+    // --- COMPREHENSIVE ROUND ---
     const cGen = document.getElementById('comp-general-info');
     COMP_GENERAL.forEach((l, i) => cGen.innerHTML += genInput(`c-gen-${i}`, l, l.includes('Pending') || l.includes('High-risk')));
 
@@ -291,13 +268,11 @@ function saveRoundingDataForDate() {
     const date = document.getElementById('rounding-date').value;
     if (!date) return alert("Select a date.");
 
-    // Scrape Quick
     const quick = { doc: [], sec2: [], unit: [] };
     QUICK_DOC_CONTROL.forEach((_, i) => quick.doc.push(document.getElementById(`q-doc-${i}`).value.trim()));
     QUICK_SEC2.forEach((_, i) => quick.sec2.push({ r: document.getElementById(`q-s2-rating-${i}`).value, m: document.getElementById(`q-s2-rmk-${i}`).value.trim() }));
     QUICK_UNIT_DETAILS.forEach((_, i) => quick.unit.push(document.getElementById(`q-unit-${i}`).value.trim()));
 
-    // Scrape Comprehensive
     const comp = { gen: [], secB: [], sec3: [], capa: [], sumTxt: [], sumSig: [] };
     COMP_GENERAL.forEach((_, i) => comp.gen.push(document.getElementById(`c-gen-${i}`).value.trim()));
     
@@ -325,61 +300,104 @@ function saveRoundingDataForDate() {
     alert(`Rounding data saved securely for ${date}!`);
 }
 
-// ---------------- EXPORT NATIVE EXCEL ---------------- //
+// ---------------- MAC COMPATIBLE BULLETPROOF CSV EXPORTER ---------------- //
 function exportRoundingDataToExcel() {
-    const store = getRoundingDataStore(); const dates = Object.keys(store).sort();
+    const store = getRoundingDataStore(); 
+    const dates = Object.keys(store).sort();
     if (dates.length === 0) return alert("No data saved yet.");
 
-    const secBTitles = []; COMP_SEC_B.forEach(g => g.items.forEach(i => secBTitles.push(i)));
-    let html = `<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:x="urn:schemas-microsoft-com:office:excel" xmlns="http://www.w3.org/TR/REC-html40"><head><meta charset="utf-8"><style>table{border-collapse:collapse;margin-bottom:20px;} th,td{border:1px solid #000;padding:5px;vertical-align:top;} th{background-color:#163a5f;color:white;} .h{background-color:#e9ecef;font-weight:bold;} .d{background-color:#0d9488;color:white;font-size:14pt;font-weight:bold;} .qh{background-color:#f0ad4e;color:white;font-weight:bold;}</style></head><body><h2>Clinical Rounding Export</h2>`;
-    
+    const secBTitles = []; 
+    COMP_SEC_B.forEach(g => g.items.forEach(i => secBTitles.push(i)));
+
+    // Mathematical escape function to prevent Apple Numbers corruption
+    function escapeCSV(val) {
+        if (val === null || val === undefined) return '';
+        let str = String(val);
+        if (str.includes('"') || str.includes(',') || str.includes('\n') || str.includes('\r')) {
+            return '"' + str.replace(/"/g, '""') + '"';
+        }
+        return str;
+    }
+
+    let csv = "";
+    function addRow(arr) { csv += arr.map(escapeCSV).join(',') + "\r\n"; }
+
+    addRow(["Clinical Leadership Rounding Export"]);
+    addRow(["Exported on:", new Date().toLocaleDateString()]);
+    addRow([]);
+
     dates.forEach(date => {
         const d = store[date]; const q = d.quick; const c = d.comp;
-        html += `<table><tr><td colspan="6" class="d">DATE: ${date}</td></tr>`;
+        addRow(["========================================="]);
+        addRow(["ROUNDING DATE:", date]);
+        addRow(["========================================="]);
+        addRow([]);
         
         // --- EXPORT QUICK ROUND ---
-        html += `<tr><td colspan="6" class="qh">--- QUICK ROUND (Pages 1-3) ---</td></tr>`;
-        html += `<tr><th colspan="2">Document Control</th><th colspan="4">Value</th></tr>`;
-        QUICK_DOC_CONTROL.forEach((l, i) => html += `<tr><td colspan="2">${l}</td><td colspan="4">${q.doc[i]||''}</td></tr>`);
+        addRow(["--- QUICK ROUND (Pages 1-3) ---"]);
+        addRow(["Document Control", "Value"]);
+        QUICK_DOC_CONTROL.forEach((l, i) => addRow([l, q.doc[i] || '']));
+        addRow([]);
         
-        html += `<tr><th colspan="2">Unit Details</th><th colspan="4">Value</th></tr>`;
-        QUICK_UNIT_DETAILS.forEach((l, i) => html += `<tr><td colspan="2">${l}</td><td colspan="4">${(q.unit[i]||'').replace(/\n/g,'<br>')}</td></tr>`);
+        addRow(["Unit Details", "Value"]);
+        QUICK_UNIT_DETAILS.forEach((l, i) => addRow([l, q.unit[i] || '']));
+        addRow([]);
         
-        html += `<tr><th>No.</th><th colspan="3">Common Checkpoint</th><th>Rating</th><th>Findings</th></tr>`;
-        q.sec2.forEach((item, i) => { if(item.r !== 'C' || item.m) html += `<tr><td>${i+1}</td><td colspan="3">${QUICK_SEC2[i]}</td><td>${item.r}</td><td>${(item.m||'').replace(/\n/g,'<br>')}</td></tr>`; });
+        addRow(["No.", "Common Checkpoint", "Rating", "Findings"]);
+        q.sec2.forEach((item, i) => { 
+            if(item.r !== 'C' || item.m) addRow([i + 1, QUICK_SEC2[i], item.r, item.m]); 
+        });
+        addRow([]);
 
         // --- EXPORT COMPREHENSIVE ROUND ---
-        html += `<tr><td colspan="6" style="height:15px; border:none;"></td></tr>`;
-        html += `<tr><td colspan="6" class="qh" style="background:#0275d8;">--- COMPREHENSIVE ROUND (Pages 8-18) ---</td></tr>`;
-        html += `<tr><th colspan="2">General Information</th><th colspan="4">Value</th></tr>`;
-        COMP_GENERAL.forEach((l, i) => html += `<tr><td colspan="2">${l}</td><td colspan="4">${(c.gen[i]||'').replace(/\n/g,'<br>')}</td></tr>`);
+        addRow(["--- COMPREHENSIVE ROUND (Pages 8-18) ---"]);
+        addRow(["General Information", "Value"]);
+        COMP_GENERAL.forEach((l, i) => addRow([l, c.gen[i] || '']));
+        addRow([]);
         
-        html += `<tr><td colspan="6" class="h">B. Nursing Station & Ward Management</td></tr>`;
-        html += `<tr><th>No.</th><th colspan="3">Observation</th><th>Rating</th><th>Findings</th></tr>`;
-        c.secB.forEach((item, i) => { if(item.r !== 'C' || item.m) html += `<tr><td>${secBTitles[i].split(' ')[0]}</td><td colspan="3">${secBTitles[i].replace(/^[\d\.]+ /,'')}</td><td>${item.r}</td><td>${(item.m||'').replace(/\n/g,'<br>')}</td></tr>`; });
+        addRow(["B. Nursing Station & Ward Management"]);
+        addRow(["No.", "Observation", "Rating", "Findings"]);
+        c.secB.forEach((item, i) => { 
+            if(item.r !== 'C' || item.m) addRow([secBTitles[i].split(' ')[0], secBTitles[i].replace(/^[\d\.]+ /, ''), item.r, item.m]); 
+        });
+        addRow([]);
 
-        html += `<tr><td colspan="6" class="h">3. Clinical Patient Rounding</td></tr>`;
-        html += `<tr><th>No.</th><th colspan="3">Parameter</th><th>Rating</th><th>Findings</th></tr>`;
-        c.sec3.forEach((item, i) => { if(item.r !== 'C' || item.m) html += `<tr><td>${i+1}</td><td colspan="3">${COMP_SEC_3[i].param}</td><td>${item.r}</td><td>${(item.m||'').replace(/\n/g,'<br>')}</td></tr>`; });
+        addRow(["3. Clinical Patient Rounding"]);
+        addRow(["No.", "Parameter", "Rating", "Findings"]);
+        c.sec3.forEach((item, i) => { 
+            if(item.r !== 'C' || item.m) addRow([i + 1, COMP_SEC_3[i].param, item.r, item.m]); 
+        });
+        addRow([]);
 
-        html += `<tr><td colspan="6" class="h">4. CAPA Tracker</td></tr>`;
-        html += `<tr><th colspan="2">Gap</th><th>Risk</th><th>Correction</th><th>Target Date/Resp.</th><th>Status</th></tr>`;
-        if (c.capa) c.capa.forEach(a => html += `<tr><td colspan="2">${(a.gap||'').replace(/\n/g,'<br>')}</td><td>${a.risk}</td><td>${(a.correction||'').replace(/\n/g,'<br>')}</td><td>${a.targetDate} / ${a.responsible}</td><td>${a.status}</td></tr>`);
+        addRow(["4. CAPA Tracker"]);
+        addRow(["Gap", "Risk", "Correction", "Target Date/Resp.", "Status"]);
+        if (c.capa) {
+            c.capa.forEach(a => addRow([a.gap, a.risk, a.correction, `${a.targetDate} / ${a.responsible}`, a.status]));
+        }
+        addRow([]);
 
-        html += `<tr><td colspan="6" class="h">5. Summary & Signatures</td></tr>`;
-        html += `<tr><th colspan="2">Overall Status</th><td colspan="4">${c.sumOver||''}</td></tr>`;
-        html += `<tr><th colspan="2">Staffing</th><td colspan="4">${c.sumStaff||''}</td></tr>`;
-        COMP_SUMMARY_TEXT.forEach((l, i) => { if (c.sumTxt[i]) html += `<tr><th colspan="2">${l}</th><td colspan="4">${c.sumTxt[i].replace(/\n/g,'<br>')}</td></tr>`; });
-        COMP_SIGNATURES.forEach((l, i) => { if (c.sumSig[i]) html += `<tr><th colspan="2">${l} (Signature)</th><td colspan="4">${c.sumSig[i]}</td></tr>`; });
+        addRow(["5. Summary & Signatures"]);
+        addRow(["Overall Status", c.sumOver || '']);
+        addRow(["Staffing", c.sumStaff || '']);
+        COMP_SUMMARY_TEXT.forEach((l, i) => { if (c.sumTxt[i]) addRow([l, c.sumTxt[i]]); });
+        COMP_SIGNATURES.forEach((l, i) => { if (c.sumSig[i]) addRow([`${l} (Signature)`, c.sumSig[i]]); });
         
-        html += `<tr><td colspan="6" style="border:none; height:20px;"></td></tr></table>`;
+        addRow([]);
+        addRow([]);
     });
 
-    html += `</body></html>`;
-    const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([html], { type: 'application/vnd.ms-excel' }));
-    a.download = `Rounding_Export_${new Date().toISOString().split('T')[0]}.xls`; document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    // Universal UTF-8 BOM injection for Mac/Windows compatibility
+    const blob = new Blob(["\uFEFF" + csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Rounding_Export_${new Date().toISOString().split('T')[0]}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
 }
 
+// ---------------- WEEKLY AI REPORT ---------------- //
 async function generateWeeklyRoundingReport() {
     const apiKey = (localStorage.getItem('geminiApiKey') || "").trim();
     if (!apiKey) return alert("Save API Key in settings.");
