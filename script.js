@@ -125,7 +125,8 @@ async function callAIProvider(prompt, apiKey, loadingEl) {
     const res = await fetch("https://api.openai.com/v1/chat/completions", { method: "POST", headers: { "Content-Type": "application/json", "Authorization": `Bearer ${apiKey}` }, body: JSON.stringify({ model: "gpt-4o-mini", temperature: 0.2, messages: [{ role: "user", content: prompt }] }) });
     const data = await res.json(); if (data.error) throw new Error(data.error.message); return data.choices[0].message.content;
   } else {
-    let candidateModels = ['gemini-2.0-flash', 'gemini-2.5-flash'];
+    // UPDATED: Now points strictly to the 3.8 models to bypass the 2.5 restriction
+    let candidateModels = ['gemini-3.8-flash', 'gemini-3.8-flash-lite', 'gemini-pro'];
     let lastError = "";
     for (const model of candidateModels) {
       try {
